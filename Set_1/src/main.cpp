@@ -15,10 +15,9 @@ void write_to_file(std::string&, std::string);
 
 
 
-void solveTask1();
-/*
-void solveTask2();
-void solveTask3();
+void solve_task_1();
+void solve_task_2();
+/*void solveTask3();
 void solveTask4();
 void solveTask5();
 void solveTask6();
@@ -32,9 +31,9 @@ int main() {
     while (opt != 0) {
         opt = select_option();
         if (opt == 1) {
-            solveTask1();
+            solve_task_1();
         } else if (opt == 2) {
-            //solveTask2();
+            solve_task_2();
         } else if (opt == 3) {
             //solveTask3();
         } else if (opt == 4) {
@@ -176,7 +175,7 @@ void write_to_file(std::string& text, std::string file_name)
 // -                 =
 // -------------------
 //--------------------------------------------------
-void solveTask1()
+void solve_task_1()
 {
     std::string hex = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
     
@@ -184,4 +183,15 @@ void solveTask1()
     hex_to_base64(hex, base64);
 
     std::cout << "Result: " << base64 << "\n";
+}
+
+
+void solve_task_2()
+{
+    std::string a = "1c0111001f010100061a024b53535009181c";
+    std::string b = "686974207468652062756c6c277320657965";
+
+    std::string res = XOR_hex_strs(a, b);
+
+    std::cout << "Result: " << res << "\n";
 }

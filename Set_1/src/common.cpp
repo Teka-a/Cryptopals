@@ -54,6 +54,30 @@ void printBytes(bytes& arr)
 }
 
 
+std::string XOR_hex_strs(std::string& a, std::string& b)
+{
+    while (a.length() < b.length()) {
+        a = "0" + a;
+    }
+    while (a.length() > b.length()) {
+        b = "0" + b;
+    }
+    bytes a_bytes, b_bytes;
+    hex_to_bytes(a, a_bytes);
+    hex_to_bytes(b, b_bytes);
+
+    for (int i = 0; i < a_bytes.size(); ++i) {
+        a_bytes[i] ^= b_bytes[i];
+    }
+
+    a = "";
+    bytes_to_hex(a_bytes, a);
+
+    return a;
+}
+
+
+
 bool is_hex(std::string& text)
 {
     for (char ch : text) {
