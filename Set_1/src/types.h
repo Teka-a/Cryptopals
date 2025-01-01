@@ -2,9 +2,10 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-
-#include <vector>
 #include <iostream>
+#include <vector>
+#include <map>
+
 
 typedef unsigned char byte;
 typedef std::vector<byte> bytes;

@@ -13,21 +13,25 @@ std::string get_output_file_name();
 void read_from_file(std::string&, std::string);
 void write_to_file(std::string&, std::string);
 
-
+//
+void convert_RSA_key_2_bytes();
 
 void solve_task_1();
 void solve_task_2();
-/*void solveTask3();
-void solveTask4();
-void solveTask5();
-void solveTask6();
-void solveTask7();
-void solveTask8();
+void solve_task_3();
+void solve_task_4();
+/*void solve_task_5();
+void solve_task_6();
+void solve_task_7();
+void solve_task_8();
 */
 
 int main() {
     print_menu();
     int opt = -1;
+
+    
+    
     while (opt != 0) {
         opt = select_option();
         if (opt == 1) {
@@ -35,17 +39,17 @@ int main() {
         } else if (opt == 2) {
             solve_task_2();
         } else if (opt == 3) {
-            //solveTask3();
+            solve_task_3();
         } else if (opt == 4) {
-            //solveTask4();
+            solve_task_4();
         } else if (opt == 5) {
-            //solveTask5();
+            //solve_task_5();
         } else if (opt == 6) {
-            //solveTask6();
+            //solve_task_6();
         } else if (opt == 7) {
-            //solveTask7();
+            //solve_task_7();
         } else if (opt == 8) {
-            //solveTask8();
+            //solve_task_8();
         }
     }
 
@@ -103,7 +107,7 @@ std::string get_input_file_name()
     read_from_user("Enter file name to read from: ", file_name);
 
     if (file_name == "") {
-        file_name = "input.txt";
+        file_name = "src/texts/input.txt";
     }
 
     return file_name;
@@ -117,7 +121,7 @@ std::string get_output_file_name()
     read_from_user("Enter file name to write to: ", file_name);
 
     if (file_name == "") {
-        file_name = "output.txt";
+        file_name = "src/texts/output.txt";
     }
 
     return file_name;
@@ -149,6 +153,7 @@ void write_to_file(std::string& text, std::string file_name)
         std::cout << "Error during opening the file!\n"; 
     }
 }
+
 
 //--------------------------------------------------
 // Task 1: Convert hex to base64
@@ -194,4 +199,49 @@ void solve_task_2()
     std::string res = XOR_hex_strs(a, b);
 
     std::cout << "Result: " << res << "\n";
+}
+
+
+void solve_task_3()
+{
+    std::string hex = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+    std::vector<std::string> results = find_single_byte(hex);
+    std::cout << "Result.\n\t" << 
+                 "Byte: " << results[0] << "\n\t"
+                 "String: " << results[1] << "\n\t"
+                 "Score: " << results[2] << "\n";
+}
+
+
+void solve_task_4()
+{
+    std::ifstream file (get_input_file_name());
+    std::string temp = "";
+    if (!file.is_open()) { 
+        std::cout << "Error during opening the file!\n"; 
+        return;
+    }
+
+    std::vector<std::vector<std::string>> best_results;
+    while (std::getline(file, temp)) {
+        std::vector<std::string> best_suitable_result = find_single_byte(temp);
+        best_results.push_back(best_suitable_result);
+    } 
+    file.close();
+
+    int best_score = 0;
+    std::vector<std::string> best_result;
+    int score = 0;
+    for (std::vector<std::string> res : best_results) {
+        score = std::stoi(res[2]);
+        if (score > best_score) {
+            best_result = res;
+            best_score = score;
+        }
+    }
+
+    std::cout << "Result:\n\t" << 
+                 "Byte: " << best_result[0] << "\n\t"
+                 "String: " << best_result[1] << "\n\t"
+                 "Score: " << best_result[2] << "\n";
 }

@@ -77,6 +77,86 @@ std::string XOR_hex_strs(std::string& a, std::string& b)
 }
 
 
+std::vector<std::pair<char, int>> sort_map(std::map<char, int> mp)
+{
+    std::vector<std::pair<char, int>> pairs; 
+  
+    for (std::pair<char, int> it : mp) { 
+        pairs.push_back(it); 
+    } 
+  
+    sort(pairs.begin(), pairs.end(), [](auto& a, auto& b) { return a.second > b.second; }); 
+
+    return pairs;
+}
+
+
+int get_score(std::string text)
+{
+    std::vector<char> first_13_chars {'e', 't', 'a', 'o', 'i', 'n', ' ', 's', 'h', 'r', 'd', 'l', 'u'};
+
+    std::transform(text.begin(), text.end(), text.begin(), [](unsigned char c){ return std::tolower(c); });
+
+    std::map<char, int> frequency;
+    for (int i = 0; i < text.length(); ++i) { 
+        if (frequency[text[i]]) {
+            frequency[text[i]] += 1;
+        } else {
+            frequency[text[i]] = 1;
+        }
+    }
+
+    std::vector<std::pair<char, int>> pairs = sort_map(frequency);
+    std::vector<char> chars (13, '0');
+    for (int i = 0; i < 13; ++i) {
+        chars[i] = pairs[i].first;
+    }
+
+    int score = 0;
+    for (char ch : chars) {
+        int cnt = std::count(first_13_chars.begin(), first_13_chars.end(), ch); 
+        if (cnt > 0) {
+            score += frequency[ch];
+        }
+    }
+
+    return score;
+}
+
+// {byte, string, score}
+std::vector<std::string> find_single_byte(std::string& hex_str)
+{
+    int size_required = hex_str.length();
+
+    std::vector<std::string> best_results (3, "0");
+    int best_score = 0;
+
+    for (int i = 0; i < 256; ++i) {
+        std::string single_byte = format_hex((byte)i);
+        std::string byte_str = single_byte;
+        
+        while (byte_str.length() < size_required) {
+            byte_str += single_byte;
+        }
+
+        std::string xored = XOR_hex_strs(byte_str, hex_str);
+        std::string result = "";
+        hex_to_ASCII(xored, result);
+
+        if (is_ASCII(result)) {
+            int score = get_score(result);
+            if (score > best_score) {
+                best_results[0] = single_byte;
+                best_results[1] = result;
+                best_results[2] = std::to_string(score);
+                best_score = score;
+            }
+        }           
+    }
+
+    return best_results;
+}
+
 
 bool is_hex(std::string& text)
 {
