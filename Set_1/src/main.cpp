@@ -20,8 +20,8 @@ void solve_task_1();
 void solve_task_2();
 void solve_task_3();
 void solve_task_4();
-/*void solve_task_5();
-void solve_task_6();
+void solve_task_5();
+/*void solve_task_6();
 void solve_task_7();
 void solve_task_8();
 */
@@ -43,7 +43,7 @@ int main() {
         } else if (opt == 4) {
             solve_task_4();
         } else if (opt == 5) {
-            //solve_task_5();
+            solve_task_5();
         } else if (opt == 6) {
             //solve_task_6();
         } else if (opt == 7) {
@@ -244,4 +244,16 @@ void solve_task_4()
                  "Byte: " << best_result[0] << "\n\t"
                  "String: " << best_result[1] << "\n\t"
                  "Score: " << best_result[2] << "\n";
+}
+
+
+void solve_task_5()
+{
+    std::string text = "";
+    read_from_file(text, get_input_file_name());
+    std::string key = "";
+    read_from_user("Enter key: ", key);
+
+    std::string xored = repeating_XOR(text, key);
+    std::cout << "Result: " << xored << "\n";
 }

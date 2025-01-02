@@ -77,6 +77,29 @@ std::string XOR_hex_strs(std::string& a, std::string& b)
 }
 
 
+std::string repeating_XOR(std::string& plaintext, std::string& key)
+{
+    std::string ciphertext = "";
+    int mod = key.length();
+    int diff = plaintext.length() - mod;
+
+    if (diff > 0) {
+        for (int i = 0; i < diff; ++i) {
+            key += key[i % mod];
+        }
+    }
+
+    std::string plaintext_hex = "";
+    std::string key_hex = "";
+
+    ASCII_to_hex(plaintext, plaintext_hex);
+    ASCII_to_hex(key, key_hex);
+    ciphertext = XOR_hex_strs(plaintext_hex, key_hex);
+
+    return ciphertext;
+}
+
+
 std::vector<std::pair<char, int>> sort_map(std::map<char, int> mp)
 {
     std::vector<std::pair<char, int>> pairs; 

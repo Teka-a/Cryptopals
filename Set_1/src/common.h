@@ -14,6 +14,7 @@ std::string format_hex(byte);
 void print_bytes(bytes&);
 
 std::string XOR_hex_strs(std::string&, std::string&);
+std::string repeating_XOR(std::string& plaintext, std::string& key);
 
 std::vector<std::pair<char, int>> sort_map(std::map<char, int>);
 
