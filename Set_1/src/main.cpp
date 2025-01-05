@@ -21,8 +21,8 @@ void solve_task_2();
 void solve_task_3();
 void solve_task_4();
 void solve_task_5();
-/*void solve_task_6();
-void solve_task_7();
+void solve_task_6();
+/*void solve_task_7();
 void solve_task_8();
 */
 
@@ -45,7 +45,7 @@ int main() {
         } else if (opt == 5) {
             solve_task_5();
         } else if (opt == 6) {
-            //solve_task_6();
+            solve_task_6();
         } else if (opt == 7) {
             //solve_task_7();
         } else if (opt == 8) {
@@ -256,4 +256,52 @@ void solve_task_5()
 
     std::string xored = repeating_XOR(text, key);
     std::cout << "Result: " << xored << "\n";
+}
+
+
+void solve_task_6()
+{
+    std::string text = "";
+    std::string text_ASCII = "";
+    read_from_file(text, get_input_file_name());
+
+    bytes ciphertext_bytes; 
+    base64_to_bytes(text, ciphertext_bytes);
+    bytes_to_ASCII(ciphertext_bytes, text_ASCII);
+
+    int key_size = guess_key_length(2, 40, ciphertext_bytes);
+    std::cout << "Guessed key length: " << key_size << "\n";
+
+    std::vector<bytes> ciphertext_blocks;
+    split_into_blocks(ciphertext_bytes, key_size, ciphertext_blocks);
+
+    std::vector<bytes> ciphertext_transposed_blocks;
+    transpose_blocks(ciphertext_blocks, ciphertext_transposed_blocks);
+
+    std::string key = "";
+    std::string key_hex = "";
+    for (bytes block : ciphertext_transposed_blocks) {
+        std::string hex_block = "";
+        bytes_to_hex(block, hex_block);
+        key_hex += find_single_byte(hex_block)[0];
+    }
+
+    hex_to_ASCII(key_hex, key);
+    std::cout << "Key: " << key << "\n";
+
+    bytes key_bytes;
+    ASCII_to_bytes(key, key_bytes);
+    std::string plaintext = "";
+    for (bytes& block : ciphertext_blocks) {
+        for (int i = 0; i < block.size(); ++i) {
+            block[i] ^= key_bytes[i];
+        }
+        for (unsigned char ch : block) {
+            plaintext += (char)ch;
+        }
+    }
+
+    std::cout << plaintext;
+
+    write_to_file(plaintext, get_output_file_name());
 }
