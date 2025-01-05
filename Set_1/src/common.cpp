@@ -54,17 +54,20 @@ bytes slice(bytes& vec, int start, int count)
 void split_into_blocks(bytes& orig, int size, std::vector<bytes>& blocks)
 {
     int count = orig.size() / size;
-    std::cout << orig.size() << " " << size << " " << count << "\n";
     for (int i = 0; i < count; ++i) {
         blocks.push_back(slice(orig, i * size, size));
     }
+
     int diff = orig.size() - (size * count);
     if (diff != 0) {
         bytes last (size, 0x00);
+
         int ind_last = last.size() - 1;
         int ind_orig = orig.size() - 1;
+
         while (diff > 0) {
             last[ind_last] = orig[ind_orig];
+            diff -= 1;
         }
     }
 

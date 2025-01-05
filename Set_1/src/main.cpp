@@ -275,8 +275,10 @@ void solve_task_6()
     std::vector<bytes> ciphertext_blocks;
     split_into_blocks(ciphertext_bytes, key_size, ciphertext_blocks);
 
+
     std::vector<bytes> ciphertext_transposed_blocks;
     transpose_blocks(ciphertext_blocks, ciphertext_transposed_blocks);
+
 
     std::string key = "";
     std::string key_hex = "";
@@ -300,8 +302,6 @@ void solve_task_6()
             plaintext += (char)ch;
         }
     }
-
-    std::cout << plaintext;
 
     write_to_file(plaintext, get_output_file_name());
 }
