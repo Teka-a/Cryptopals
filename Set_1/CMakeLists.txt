@@ -22,6 +22,7 @@ set(LIBRARIES
     src/types.h
     src/convertions.h src/convertions.cpp
     src/common.h src/common.cpp
+    src/AES.h src/AES.cpp
 )
 
 add_library(LIBS STATIC ${LIBRARIES})

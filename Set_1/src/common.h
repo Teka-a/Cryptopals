@@ -18,7 +18,7 @@ void transpose_blocks(std::vector<bytes>&, std::vector<bytes>&);
 
 std::string format_hex(byte);
 
-void print_bytes(bytes&);
+//void print_bytes(bytes&);
 
 std::string XOR_hex_strs(std::string&, std::string&);
 std::string repeating_XOR(std::string& plaintext, std::string& key);

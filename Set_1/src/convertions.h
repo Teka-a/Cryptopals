@@ -46,4 +46,12 @@ void binary_to_hex(std::string&, std::string&); //
 void binary_to_bytes(std::string&, bytes&); //
 void bytes_to_binary(bytes&, std::string&); //
 
+// Bytes <-> Block
+void bytes_to_block(bytes&, block&); //
+void block_to_bytes(block&, bytes&); //
+
+// Block <-> Matrix
+void block_to_matrix(block&, matrix&); //
+void matrix_to_block(matrix&, block&); //
+
 #endif // CONVERTIONS_H

@@ -9,6 +9,9 @@
 
 typedef unsigned char byte;
 typedef std::vector<byte> bytes;
+typedef byte block [16];
+typedef byte matrix [4][4];
+typedef byte word [4];
 
 static const std::string hex_chars =
              "0123456789abcdefABCDEF";

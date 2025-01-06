@@ -202,3 +202,47 @@ void bytes_to_binary(bytes& vec, std::string& binary)
         binary += bits.to_string();
     }
 }
+
+
+// Bytes <-> Block
+void bytes_to_block(bytes& vec, block& arr)
+{
+    int size = vec.size();
+    if (size > 16) {
+        std::cout << "Wrong size.\n";
+    }
+    padding_bytes(vec, 16);
+    for (int i = 0; i < 16; ++i) {
+        arr[i] = vec[i];
+    } 
+}
+
+
+void block_to_bytes(block& arr, bytes& vec)
+{
+    vec.clear();
+    for (int i = 0; i < 16; ++i) {
+        vec.push_back(arr[i]);
+    }
+}
+
+
+// Block <-> Matrix
+void block_to_matrix(block& arr, matrix& state)
+{
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            state[i][j] = arr[4 * j + i];
+        }
+    }
+}
+
+
+void matrix_to_block(matrix& state, block& arr)
+{
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            arr[4 * j + i] = state[i][j];
+        }
+    }
+}

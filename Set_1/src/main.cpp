@@ -2,7 +2,7 @@
 
 #include "convertions.h"
 #include "common.h"
-
+#include "AES.h"
 
 void print_menu();
 int select_option();
@@ -13,8 +13,6 @@ std::string get_output_file_name();
 void read_from_file(std::string&, std::string);
 void write_to_file(std::string&, std::string);
 
-//
-void convert_RSA_key_2_bytes();
 
 void solve_task_1();
 void solve_task_2();
@@ -22,8 +20,8 @@ void solve_task_3();
 void solve_task_4();
 void solve_task_5();
 void solve_task_6();
-/*void solve_task_7();
-void solve_task_8();
+void solve_task_7();
+/*void solve_task_8();
 */
 
 int main() {
@@ -47,7 +45,7 @@ int main() {
         } else if (opt == 6) {
             solve_task_6();
         } else if (opt == 7) {
-            //solve_task_7();
+            solve_task_7();
         } else if (opt == 8) {
             //solve_task_8();
         }
@@ -304,4 +302,31 @@ void solve_task_6()
     }
 
     write_to_file(plaintext, get_output_file_name());
+}
+
+
+void solve_task_7()
+{
+    std::string ciphertext_base64 = "";
+    read_from_file(ciphertext_base64, get_input_file_name());
+    
+    bytes ciphertext;
+    base64_to_bytes(ciphertext_base64, ciphertext);
+
+    std::string key_ASCII = "YELLOW SUBMARINE";
+    bytes key;
+    ASCII_to_bytes(key_ASCII, key);
+
+    params algorithm = {4, 4, 10};
+
+
+    bytes plaintext;
+    decrypt_text_ECB(ciphertext, plaintext, key, algorithm);
+
+    std::string plaintext_ASCII = "";
+
+    bytes_to_ASCII(plaintext, plaintext_ASCII);
+
+    std::cout << "Result: " << plaintext_ASCII << "\n";
+
 }
