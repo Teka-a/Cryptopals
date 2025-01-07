@@ -21,8 +21,8 @@ void solve_task_4();
 void solve_task_5();
 void solve_task_6();
 void solve_task_7();
-/*void solve_task_8();
-*/
+void solve_task_8();
+
 
 int main() {
     print_menu();
@@ -47,7 +47,7 @@ int main() {
         } else if (opt == 7) {
             solve_task_7();
         } else if (opt == 8) {
-            //solve_task_8();
+            solve_task_8();
         }
     }
 
@@ -330,3 +330,54 @@ void solve_task_7()
     std::cout << "Result: " << plaintext_ASCII << "\n";
 
 }
+
+
+void solve_task_8()
+{
+    std::string file_name = get_input_file_name();
+
+    std::ifstream file (file_name);
+    std::vector<bytes> inputs;
+
+    if (file.is_open()) {
+        std::string temp = "";
+        while (std::getline(file, temp)) {
+            bytes temp_bytes;
+            hex_to_bytes(temp, temp_bytes);
+            inputs.push_back(temp_bytes);
+        }
+        file.close();
+    } else {
+        std::cout << "Error during opening the file!\n"; 
+    }
+
+    std::cout << inputs.size() << "\n";
+
+    std::vector<bytes> suitable;
+    for (bytes input : inputs) {
+        std::vector<bytes> blocks;
+        bool flag = false;
+        
+        for (int i = 0; i < input.size(); i += 16) {
+            bytes temp = slice(input, i, 16);
+            
+            for (int j = 0; j < blocks.size(); ++j) {
+                if (compare_bytes(temp, blocks[j]) && !flag) {
+                    suitable.push_back(input);
+                    flag = true;
+                }
+            }
+            blocks.push_back(temp);
+        }
+    }
+
+    for (int i = 0; i < suitable.size(); ++i) {
+        std::cout << "Input №" << i << "(from suitable):\n";
+        for (int j = 0; j < suitable[i].size(); j += 16) {
+            bytes temp = slice(suitable[i], j, 16);
+            print_bytes(temp);
+        }
+    }
+
+}
+

@@ -334,20 +334,17 @@ void decrypt_text_ECB(bytes& ciphertext, bytes& plaintext, bytes& key, params& a
     plaintext.clear();
     std::cout << "Here\n";
     for (int i = 0; i < ciphertext.size(); i += 16) {
-        std::cout << "Here 2\n";
         bytes temp_bytes;
         
         bytes block_in = slice(ciphertext, i, 16);
-        std::cout << "After 2\n";
         bytes block_out (block_in.size());
         block aes_block_in;
         block aes_block_out;
-        std::cout << "In size: " << block_in.size() << "\t Out size: " << block_out.size();
         bytes_to_block(block_in, aes_block_in);
         bytes_to_block(block_out, aes_block_out);
-        std::cout << "Before decrypt";
+
         decrypt_block(aes_block_in, aes_block_out, key_schedule, algorithm.Nr);
-        std::cout << i << "iter\n";
+
         
         block_to_bytes(aes_block_out, temp_bytes);
         plaintext.insert(plaintext.end(), temp_bytes.begin(), temp_bytes.end());

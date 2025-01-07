@@ -88,6 +88,18 @@ void transpose_blocks(std::vector<bytes>& orig, std::vector<bytes>& transposed)
 }
 
 
+bool compare_bytes(const bytes& a, const bytes& b)
+{
+    for (int i = 0; i < 16; ++i) {
+        if (a[i] != b[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 std::string format_hex(byte ch)
 {
     std::string hex = "";
@@ -100,6 +112,16 @@ std::string format_hex(byte ch)
     padding(hex, '0', 2, 0);
 
     return hex;
+}
+
+
+void print_bytes(bytes& arr)
+{
+    std::cout << "Bytes: \n\t";
+    for (unsigned char byte : arr) {
+        std::cout << format_hex(byte) << " ";
+    }
+    std::cout << "\n";
 }
 
 
