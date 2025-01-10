@@ -25,6 +25,7 @@ set(LIBRARIES
     src/AES.h src/AES.cpp
     src/input_handlers.h src/input_handlers.cpp
     src/set_1.h src/set_1.cpp
+    src/set_2.h src/set_2.cpp
 )
 
 add_library(LIBS STATIC ${LIBRARIES})
