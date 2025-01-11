@@ -38,7 +38,7 @@ int main() {
         } else if (opt == 9) {
             solve_task_9();
         } else if (opt == 10) {
-            //solve_task_10();
+            solve_task_10();
         } else if (opt == 11) {
             //solve_task_11();
         } else if (opt == 12) {

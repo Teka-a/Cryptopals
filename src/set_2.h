@@ -1,5 +1,5 @@
 void solve_task_9();
-//void solve_task_10();
+void solve_task_10();
 //void solve_task_11();
 //void solve_task_12();
 //void solve_task_13();
