@@ -1,4 +1,7 @@
 #include <sstream>
+#include <chrono>
+#include <random>
+#include <thread>
 
 #include "common.h"
 
@@ -121,18 +124,6 @@ void print_bytes(bytes& arr)
     for (unsigned char byte : arr) {
         std::cout << format_hex(byte) << " ";
     }
-    std::cout << "\n";
-}
-
-
-void printBytes(bytes& arr)
-{
-    std::cout << "Bytes: \n\t";
-
-    for (unsigned char byte : arr) {
-        std::cout << format_hex(byte) << " ";
-    }
-
     std::cout << "\n";
 }
 
@@ -297,18 +288,18 @@ int guess_key_length(int min_length, int max_length, bytes& vec)
         blocks[1] = slice(vec, key_length, key_length);
         blocks[2] = slice(vec, key_length * 2, key_length);
         blocks[3] = slice(vec, key_length * 3, key_length);
-        double avgEditDist = 0.0;
+        double avg_edit_dist = 0.0;
         for (int i = 0; i < 4; ++i) {
             for (int j = i + 1; j < 4; ++j) {
                 std::string i_binary = "";
                 std::string j_binary = "";
                 bytes_to_binary(blocks[i], i_binary);
                 bytes_to_binary(blocks[j], j_binary);
-                avgEditDist += compute_hamming_distance(i_binary, j_binary);
+                avg_edit_dist += compute_hamming_distance(i_binary, j_binary);
             }
         }
-        avgEditDist /= key_length;
-        key_length_probabilities[key_length] = avgEditDist;
+        avg_edit_dist /= key_length;
+        key_length_probabilities[key_length] = avg_edit_dist;
     }
     std::vector<std::pair<int, double>> pairs; 
   
@@ -319,6 +310,65 @@ int guess_key_length(int min_length, int max_length, bytes& vec)
     sort(pairs.begin(), pairs.end(), [](auto& a, auto& b) { return a.second < b.second; }); 
     
     return pairs[0].first;
+}
+
+
+int generate_random_number(int max_value)
+{
+    std::random_device rd;
+    std::mt19937::result_type seed = rd() ^ (
+            (std::mt19937::result_type)
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::system_clock::now().time_since_epoch()
+                ).count() +
+            (std::mt19937::result_type)
+            std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::high_resolution_clock::now().time_since_epoch()
+                ).count() );
+
+    std::mt19937 gen(seed);
+    std::mt19937::result_type n;
+    while ( (n = gen()) > std::mt19937::max() - (std::mt19937::max() - max_value - 1) % max_value) {
+                 /* Bad value retrieved. Proceed to a next one */ 
+    }
+
+
+    int random_value = n % max_value;
+
+    return random_value;
+}
+
+
+bytes generate_random_bytes_sequence(int length)
+{
+    bytes rand_sequence;
+
+    for (unsigned int i = 0; i < length; ++i) {
+        rand_sequence.push_back((byte)generate_random_number(256));
+    }
+
+    return rand_sequence;
+
+}
+
+
+bool is_ECB(bytes& ciphertext)
+{
+    std::vector<bytes> blocks;
+    bool flag = false;
+
+    for (unsigned int i = 0; i < ciphertext.size(); i += 16) {
+        bytes temp = slice(ciphertext, i, 16);
+        for (unsigned int j = 0; j < blocks.size(); ++j) {
+            if (compare_bytes(temp, blocks[j]) && !flag) {
+                flag = true;
+            }
+        }
+        blocks.push_back(temp);
+    }
+
+    return flag;
+
 }
 
 

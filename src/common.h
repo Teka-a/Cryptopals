@@ -33,6 +33,12 @@ std::vector<std::string> find_single_byte(std::string&);
 int compute_hamming_distance(std::string, std::string);
 int guess_key_length(int, int, bytes&);
 
+int generate_random_number(int);
+bytes generate_random_bytes_sequence(int);
+
+
+
+bool is_ECB(bytes&);
 
 bool is_hex(std::string&);
 bool is_ASCII(std::string&);
