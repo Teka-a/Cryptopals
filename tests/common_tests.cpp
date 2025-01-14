@@ -2,68 +2,120 @@
 #include "common.h"
 
 
-TEST(XOR_hex_strs, BasicAssertions)
-{
-    std::string a {"1c0111001f010100061a024b53535009181c"};
-    std::string b {"686974207468652062756c6c277320657965"};
-    std::string c {"746865206b696420646f6e277420706c6179"};
-    
-    std::string res = XOR_hex_strs(a, b);
-
-    EXPECT_EQ(res, c);
-}
-
-
 TEST(padding_left, BasicAssertions)
 {
-    std::string a {"1111111111"};
-    std::string c {"00000000001111111111"};
+    std::string produced_padding {"1111111111"};
     
-    padding(a, '0', 20, 0);
+    padding(produced_padding, '0', 20, 0);
 
-    EXPECT_EQ(a, c);
+    std::string expected_padding {"00000000001111111111"};
+    EXPECT_EQ(expected_padding, produced_padding);
 }
 
 
 TEST(padding_right, BasicAssertions)
 {
-    std::string a {"1111111111"};
-    std::string c {"11111111110000000000"};
+    std::string produced_padding {"1111111111"};
     
-    padding(a, '0', 20, 1);
+    padding(produced_padding, '0', 20, 1);
 
-    EXPECT_EQ(a, c);
+    std::string expected_padding {"11111111110000000000"};
+    EXPECT_EQ(expected_padding, produced_padding);
 }
 
 
 TEST(padding_bytes, BasicAssertions)
 {
-    bytes test_vec {0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80};
-    bytes res_vec {0x00, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80};
+    bytes produced_padding {0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80};
 
-    padding_bytes(test_vec, 16);
+    padding_bytes(produced_padding, 16);
 
-    EXPECT_EQ(test_vec, res_vec);
+    bytes expected_padding {0x00, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80};
+    EXPECT_EQ(expected_padding, produced_padding);
 }
 
 
 TEST(insert_symbol, BasicAssertions)
 {
-    std::string a {"1111111111"};
-    std::string c {"00000000001111111111"};
+    std::string produced_insert {"1111111111"};
     
-    insert_symbol(a, '0', 10);
+    insert_symbol(produced_insert, '0', 10);
 
-    EXPECT_EQ(a, c);
+    std::string expected_insert {"00000000001111111111"};
+    EXPECT_EQ(expected_insert, produced_insert);
 }
 
 
 TEST(slice, BasicAssertions)
 {
-    bytes test_vec {0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80};
-    bytes sliced_vec = slice(test_vec, 3, 5);
-    bytes res_vec {0x89, 0x56, 0x80, 0x89, 0x56};
+    bytes vec {0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80};
 
+    bytes produced_sliced = slice(vec, 3, 5);
 
-    EXPECT_EQ(sliced_vec, res_vec);
+    bytes expected_sliced {0x89, 0x56, 0x80, 0x89, 0x56};
+    EXPECT_EQ(expected_sliced, produced_sliced);
 }
+
+
+TEST(split_into_blocks, BasicAssertions)
+{
+    bytes vec {0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80, 0x89, 0x56, 0x80};
+
+    std::vector<bytes> produced_splitted;
+    split_into_blocks(vec, 3, produced_splitted);
+
+    std::vector<bytes> expected_splitted {{0x89, 0x56, 0x80}, {0x89, 0x56, 0x80}, {0x89, 0x56, 0x80}, {0x89, 0x56, 0x80}, {0x89, 0x56, 0x80}};
+    EXPECT_EQ(expected_splitted, produced_splitted);
+}
+
+
+TEST(transpose_blocks, BasicAssertions)
+{
+    std::vector<bytes> arr {{0x89, 0x56, 0x80}, {0x89, 0x56, 0x80}, {0x89, 0x56, 0x80}, {0x89, 0x56, 0x80}, {0x89, 0x56, 0x80}};
+
+    std::vector<bytes> produced_transposed;
+    transpose_blocks(arr, produced_transposed);
+
+    std::vector<bytes> expected_transposed {{0x89, 0x89, 0x89, 0x89, 0x89}, {0x56, 0x56, 0x56, 0x56, 0x56}, {0x80, 0x80, 0x80, 0x80, 0x80}};
+    EXPECT_EQ(expected_transposed, produced_transposed);
+}
+
+
+TEST(compare_bytes, BasicAssertions)
+{
+    bytes a_vec {0x79, 0x89, 0x23, 0xf3, 0x2};
+    bytes b_vec {0x79, 0x89, 0x23, 0xf3, 0x2};
+    bytes c_vec {0x79, 0x89, 0x23, 0xf4, 0x25};
+
+    bool equal_a_b = compare_bytes(a_vec, b_vec);
+    bool equal_a_c = compare_bytes(a_vec, c_vec);
+
+    bool produced_comparison = (equal_a_b && !equal_a_c) ? true : false;
+
+    EXPECT_EQ(true, produced_comparison);
+}
+
+
+TEST(format_hex, BasicAssertions)
+{
+    char h = 0x89;
+
+    std::string produced_hex = format_hex(h);
+
+    std::string expected_hex = "89";
+    EXPECT_EQ(expected_hex, produced_hex);
+}
+
+
+TEST(XOR_hex_strs, BasicAssertions)
+{
+    std::string a_str {"1c0111001f010100061a024b53535009181c"};
+    std::string b_str {"686974207468652062756c6c277320657965"};
+    
+    std::string produced_XOR = XOR_hex_strs(a_str, b_str);
+
+    std::string expected_XOR {"746865206b696420646f6e277420706c6179"};
+    EXPECT_EQ(expected_XOR, produced_XOR);
+}
+
+
