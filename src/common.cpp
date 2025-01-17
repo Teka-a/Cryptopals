@@ -372,6 +372,20 @@ bool is_ECB(bytes& ciphertext)
 }
 
 
+int discover_block_size(bytes& key)
+{
+    bytes test_bytes {0x00};
+    int outputSizeA = (test_bytes, key).size();
+    int outputSizeB = outputSizeA;
+    //возможно ли объединить encryption oracle, чтобы вынести это в общие функции
+    while (outputSizeB <= outputSizeA) {
+        test_bytes.push_back(0x00);
+        outputSizeB = encryption_oracle_12(test_bytes, key).size();
+    }
+    return std::__gcd(outputSizeA, outputSizeB);
+}
+
+
 bool is_hex(std::string& text)
 {
     for (char ch : text) {

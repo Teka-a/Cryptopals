@@ -36,9 +36,9 @@ int guess_key_length(int, int, bytes&);
 int generate_random_number(int);
 bytes generate_random_bytes_sequence(int);
 
-
-
 bool is_ECB(bytes&);
+
+int discover_block_size(bytes&);
 
 bool is_hex(std::string&);
 bool is_ASCII(std::string&);

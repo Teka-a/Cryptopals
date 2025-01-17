@@ -91,3 +91,28 @@ void solve_task_11()
     }
 
 }
+
+
+bytes encryption_oracle_task12(bytes text, bytes& key, bytes& additionalBytes)
+{
+    bytes ciphertext;
+    params algorithm {4, 4, 10};
+
+    text.insert(text.end(), additionalBytes.begin(), additionalBytes.end());
+    padding_PKCS7(text, 16);
+
+    encrypt_text_ECB(text, ciphertext, key, algorithm);
+
+    return ciphertext;
+}
+
+
+void solve_task_12()
+{
+    KEY_TASK_12 = generate_random_bytes_sequence(16);
+
+    std::string base64 = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK";
+    bytes additional_bytes;
+    base64_to_bytes(base64, UNKNOWN_STRING_TASK_12);
+
+}
