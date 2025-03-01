@@ -128,6 +128,23 @@ void print_bytes(bytes& arr)
 }
 
 
+void print_cipher_dict(std::map<bytes, byte>& cipher_dict)
+{
+    std::cout << "{\n";
+    for (std::pair<bytes, byte> entry : cipher_dict) {
+        for (unsigned char byte : entry.first) {
+            std::cout << format_hex(byte) << " ";
+        }
+        std::cout << ": ";
+        
+        std::cout << format_hex(entry.second) << " ";
+        
+        std::cout << ";\n";
+    }
+    std::cout << "} \t Total size: " << cipher_dict.size() << "\n";
+}
+
+
 std::string XOR_hex_strs(std::string& a, std::string& b)
 {
     while (a.length() < b.length()) {
@@ -352,13 +369,13 @@ bytes generate_random_bytes_sequence(int length)
 }
 
 
-bool is_ECB(bytes& ciphertext)
+bool contains_repeating_blocks(bytes& ciphertext, int block_size)
 {
     std::vector<bytes> blocks;
     bool flag = false;
 
-    for (unsigned int i = 0; i < ciphertext.size(); i += 16) {
-        bytes temp = slice(ciphertext, i, 16);
+    for (unsigned int i = 0; i < ciphertext.size(); i += block_size) {
+        bytes temp = slice(ciphertext, i, block_size);
         for (unsigned int j = 0; j < blocks.size(); ++j) {
             if (compare_bytes(temp, blocks[j]) && !flag) {
                 flag = true;
@@ -367,22 +384,63 @@ bool is_ECB(bytes& ciphertext)
         blocks.push_back(temp);
     }
 
-    return flag;
+    for (bytes block : blocks) {
+        print_bytes(block);
+    }
 
+    return flag;
 }
 
 
-int discover_block_size(bytes& key)
+std::map<bytes, byte> produce_last_byte_dict(bytes not_full_block, int block_size, bytes (*oracle)(const bytes&))
+{
+    std::map<bytes, byte> cipher_dictionary;
+    bytes plain = not_full_block;
+    plain.push_back(0x00);
+    bytes cipher;
+
+    for (unsigned int b = 0; b <= 256; ++b) {
+        plain[block_size - 1] = (byte)b;
+        cipher = oracle(plain);
+        cipher = slice(cipher, 0, block_size);
+        cipher_dictionary[cipher] = (byte)b;
+    }
+
+    //std::cout << cipher_dictionary.size() << "\n";
+
+    return cipher_dictionary;
+}
+
+
+bool is_oracle_encrypt_ECB_mode(bytes (*oracle)(const bytes&))
+{
+    bytes text;
+
+    for (int i = 0; i < 100; ++i) {
+        text.push_back(0x00);
+    }
+    
+    std::cout << "Main information about random encryption\n";
+    bytes ciphertext = oracle(text);
+
+    int block_size = discover_block_size(oracle);
+
+    return contains_repeating_blocks(ciphertext, block_size);
+}
+
+
+int discover_block_size(bytes (*oracle)(const bytes&))
 {
     bytes test_bytes {0x00};
-    int outputSizeA = (test_bytes, key).size();
-    int outputSizeB = outputSizeA;
-    //возможно ли объединить encryption oracle, чтобы вынести это в общие функции
-    while (outputSizeB <= outputSizeA) {
+    int output_size_a = oracle(test_bytes).size();
+    int output_size_b = output_size_a;
+
+    while (output_size_b <= output_size_a) {
         test_bytes.push_back(0x00);
-        outputSizeB = encryption_oracle_12(test_bytes, key).size();
+        output_size_b = oracle(test_bytes).size();
     }
-    return std::__gcd(outputSizeA, outputSizeB);
+    
+    return std::__gcd(output_size_a, output_size_b);
 }
 
 

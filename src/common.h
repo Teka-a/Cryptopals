@@ -20,6 +20,7 @@ bool compare_bytes(const bytes&, const bytes&);
 std::string format_hex(byte);
 
 void print_bytes(bytes&);
+void print_cipher_dict(std::map<bytes, byte>&);
 
 std::string XOR_hex_strs(std::string&, std::string&);
 std::string repeating_XOR(std::string& plaintext, std::string& key);
@@ -36,9 +37,13 @@ int guess_key_length(int, int, bytes&);
 int generate_random_number(int);
 bytes generate_random_bytes_sequence(int);
 
-bool is_ECB(bytes&);
+bool contains_repeating_blocks(bytes&, int);
+bool is_oracle_encrypt_ECB_mode(bytes (*oracle)(const bytes&));
 
-int discover_block_size(bytes&);
+int discover_block_size(bytes (*oracle)(const bytes&));
+
+std::map<bytes, byte> produce_last_byte_dict(bytes, int, bytes (*oracle)(const bytes&));
+
 
 bool is_hex(std::string&);
 bool is_ASCII(std::string&);

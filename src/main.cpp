@@ -42,7 +42,7 @@ int main() {
         } else if (opt == 11) {
             solve_task_11();
         } else if (opt == 12) {
-            //solve_task_12();
+            solve_task_12();
         } else if (opt == 13) {
             //solve_task_13();
         } else if (opt == 14) {
