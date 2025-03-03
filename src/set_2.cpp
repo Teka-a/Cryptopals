@@ -99,6 +99,7 @@ bytes encryption_oracle_12(const bytes& text)
 
     bytes plaintext;
     plaintext.insert(plaintext.end(), text.begin(), text.end());
+
     plaintext.insert(plaintext.end(), UNKNOWN_STRING_TASK_12.begin(), UNKNOWN_STRING_TASK_12.end());
 
     encrypt_text_ECB(plaintext, ciphertext, KEY_TASK_12, algorithm);
@@ -112,7 +113,7 @@ void solve_task_12()
     KEY_TASK_12 = generate_random_bytes_sequence(16);
 
     std::string base64 = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK";
-    bytes additional_bytes;
+
     base64_to_bytes(base64, UNKNOWN_STRING_TASK_12);
 
     int block_size = discover_block_size(encryption_oracle_12);
@@ -128,9 +129,9 @@ void solve_task_12()
 
     bytes test_len = {0x00};
     int x_str_len = encryption_oracle_12(test_len).size();
-    //std::cout << "x len: " << x_str_len << "\n";
+
     int attack_block_start_ind = ((x_str_len / block_size) - 1) * 16;
-    //std::cout << "ind attack block: " << attack_block_start_ind << "\n";
+
     bytes user_input (x_str_len, 0x00);
     bytes encrypted;
     bytes enc_attack_block;
@@ -141,32 +142,24 @@ void solve_task_12()
 
     bytes temp;
 
-    for (int i = 3; i > 0; --i) {
+    for (int i = x_str_len; i > 0; --i) {
         user_input = slice(user_input, 1, user_input.size() - 1);
         x_text = slice(x_text, 1, x_text.size() - 1);
-        //print_bytes(user_input);
+
         temp = slice(x_text, attack_block_start_ind, block_size - 1);
-
         std::map<bytes, byte> last_byte_dict = produce_last_byte_dict(temp, block_size, encryption_oracle_12);
-        print_cipher_dict(last_byte_dict);
-
-        //std::cout << "Plain user input: \n";
-        //print_bytes(user_input);
+        
         encrypted = encryption_oracle_12(user_input);
-        //std::cout << "Encrypted user input: \n";
-        //print_bytes(encrypted);
 
         enc_attack_block = slice(encrypted, attack_block_start_ind, block_size);
-        print_bytes(enc_attack_block);
 
         finded_byte = last_byte_dict[enc_attack_block];
-        std::cout << "Byte: " << format_hex(finded_byte) << "\n";
 
         x_text.push_back(finded_byte);
-
     }
 
-    print_bytes(x_text);
 
-
+    std::string ascii = "";
+    bytes_to_ASCII(x_text, ascii);
+    std::cout << ascii << "\n";
 }

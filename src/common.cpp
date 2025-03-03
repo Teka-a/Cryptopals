@@ -384,10 +384,6 @@ bool contains_repeating_blocks(bytes& ciphertext, int block_size)
         blocks.push_back(temp);
     }
 
-    for (bytes block : blocks) {
-        print_bytes(block);
-    }
-
     return flag;
 }
 

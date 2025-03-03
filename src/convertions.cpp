@@ -184,7 +184,7 @@ void binary_to_hex(std::string& binary, std::string& hex)
 void binary_to_bytes(std::string& binary, bytes& vec)
 {
     vec.clear();
-    padding(binary, '0', 8, 0);
+    padding(binary, '0', 8, 1);
 
     for (int i = 0; i < binary.length(); i += 8) {
         std::bitset<8> bits (binary.substr(i, 8));
