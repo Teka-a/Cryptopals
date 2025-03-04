@@ -44,7 +44,7 @@ int main() {
         } else if (opt == 12) {
             solve_task_12();
         } else if (opt == 13) {
-            //solve_task_13();
+            solve_task_13();
         } else if (opt == 14) {
             //solve_task_14();
         } else if (opt == 15) {

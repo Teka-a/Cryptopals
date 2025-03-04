@@ -44,6 +44,8 @@ int discover_block_size(bytes (*oracle)(const bytes&));
 
 std::map<bytes, byte> produce_last_byte_dict(bytes, int, bytes (*oracle)(const bytes&));
 
+std::string create_profile_for(std::string);
+std::vector<std::pair<std::string, std::string>> parse(std::string&);
 
 bool is_hex(std::string&);
 bool is_ASCII(std::string&);

@@ -8,6 +8,9 @@
 bytes KEY_TASK_12 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x14, 0x56, 0x00, 0x05, 0x50, 0x77, 0x1a, 0x3b};
 bytes UNKNOWN_STRING_TASK_12;
 
+bytes KEY_TASK_13 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x14, 0x56, 0x00, 0x05, 0x50, 0x77, 0x1a, 0x3b};
+
+
 void solve_task_9()
 {
     std::string str = "YELLOW SUBMARINE";
@@ -162,4 +165,43 @@ void solve_task_12()
     std::string ascii = "";
     bytes_to_ASCII(x_text, ascii);
     std::cout << ascii << "\n";
+}
+
+
+bytes encryption_oracle_13(const bytes& text)
+{
+    bytes ciphertext;
+    params algorithm {4, 4, 10};
+
+    bytes plaintext;
+    plaintext.insert(plaintext.end(), text.begin(), text.end());
+
+    encrypt_text_ECB(plaintext, ciphertext, KEY_TASK_13, algorithm);
+
+    return ciphertext;
+}
+
+
+/*
+    27 47 16 32 bd 2a f3 6e e7 8a 19 79 b8 25 3b 3c 
+    08 af 31 0d 1a 4a 21 56 3a 4c 44 5e 72 01 fd d9 
+    04 9c e0 c4 9c a5 21 18 1b d0 21 94 92 e3 55 f0 
+
+    
+*/
+void solve_task_13()
+{
+    std::string profile = create_profile_for("foo@bar.com");
+    KEY_TASK_13 = generate_random_bytes_sequence(16);
+
+    bytes profile_ciphertext;
+    bytes profile_plaintext;
+
+    ASCII_to_bytes(profile, profile_plaintext);
+
+    profile_ciphertext = encryption_oracle_13(profile_plaintext);
+    print_bytes(profile_ciphertext);
+
+
+    
 }

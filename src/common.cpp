@@ -440,6 +440,46 @@ int discover_block_size(bytes (*oracle)(const bytes&))
 }
 
 
+std::string create_profile_for(std::string email)
+{
+    email.erase(std::remove(email.begin(), email.end(), '='), email.end());
+    email.erase(std::remove(email.begin(), email.end(), '&'), email.end());
+    //int uid = generateRandomNumber(100);
+    int uid = 10;
+    std::string result = "email=" + email + "&uid=" + std::to_string(uid) + "&role=user";
+    
+    return result;
+}
+
+
+std::vector<std::pair<std::string, std::string>> parse(std::string& text)
+{
+    std::stringstream temp(text);
+    std::string segment;
+    std::vector<std::string> entries;
+
+    while (std::getline(temp, segment, '&')) {
+        entries.push_back(segment);
+    }
+
+    std::vector<std::pair<std::string, std::string>> dictionary;
+
+    for (std::string entry : entries) {
+        std::stringstream entry_temp(entry);
+        std::vector<std::string> pairs;
+
+        while (std::getline(entry_temp, segment, '=')) {
+            pairs.push_back(segment);
+        }
+
+        std::pair<std::string, std::string> entry_pair {pairs[0], pairs[1]};
+        dictionary.push_back(entry_pair);
+    }
+
+    return dictionary;
+}
+
+
 bool is_hex(std::string& text)
 {
     for (char ch : text) {
