@@ -444,9 +444,9 @@ std::string create_profile_for(std::string email)
 {
     email.erase(std::remove(email.begin(), email.end(), '='), email.end());
     email.erase(std::remove(email.begin(), email.end(), '&'), email.end());
-    //int uid = generateRandomNumber(100);
     int uid = 10;
     std::string result = "email=" + email + "&uid=" + std::to_string(uid) + "&role=user";
+    //std::cout << "Profile: " << result << "\n";
     
     return result;
 }

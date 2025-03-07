@@ -182,26 +182,107 @@ bytes encryption_oracle_13(const bytes& text)
 }
 
 
-/*
-    27 47 16 32 bd 2a f3 6e e7 8a 19 79 b8 25 3b 3c 
-    08 af 31 0d 1a 4a 21 56 3a 4c 44 5e 72 01 fd d9 
-    04 9c e0 c4 9c a5 21 18 1b d0 21 94 92 e3 55 f0 
+bool is_profile_has_admin_role(const bytes& text)
+{
+    bytes plaintext;
+    bytes ciphertext;
 
-    
+    params algorithm {4, 4, 10};
+
+    ciphertext.insert(ciphertext.end(), text.begin(), text.end());
+
+    decrypt_text_ECB(ciphertext, plaintext, KEY_TASK_13, algorithm);
+
+    std::string profile = "";
+    bytes_to_ASCII(plaintext, profile);
+    std::cout << "Decrypted: "  << profile << "\n";
+
+    std::vector<std::pair<std::string, std::string>> profile_dict = parse(profile);
+
+    bool is_admin_role = false;
+    for (std::pair<std::string, std::string> pair : profile_dict) {
+        if (pair.first == "role") {
+            if (pair.second == "admin") {
+                is_admin_role = true;
+            }
+        }
+    }
+
+
+    return is_admin_role;
+}
+
+
+/*
+    email=foo@bar.co
+    m&uid=10&role=us
+    admin(PKCS7)
+
+    email=foo@bar.co
+    admin(PKCS7)
+    m00&uid=10&role=
+    profile_for(foo@bar.coadmin(PKCS7)m00)
+    Change C3 with C2
+
+    e4 69 6e e4 99 9e 8b 38 a9 36 dc f3 58 5f f0 b1
+    a4 ec 41 0b 88 37 1b 18 dd 1b 77 d8 0d 7d f0 f1 
+    72 42 48 5a 73 9a 26 d8 92 3b ec 8b 5a 71 2d cb
 */
 void solve_task_13()
 {
-    std::string profile = create_profile_for("foo@bar.com");
     KEY_TASK_13 = generate_random_bytes_sequence(16);
 
-    bytes profile_ciphertext;
-    bytes profile_plaintext;
+    bytes profile_ciphertext_admin_midle;
+    bytes profile_ciphertext_orig;
 
-    ASCII_to_bytes(profile, profile_plaintext);
+    bytes profile_plaintext_admin_midle;
+    bytes profile_plaintext_orig;
 
-    profile_ciphertext = encryption_oracle_13(profile_plaintext);
-    print_bytes(profile_ciphertext);
+    std::string admin_midle = "foo@bar.co";
+    bytes admin_midle_bytes;
+    ASCII_to_bytes(admin_midle, admin_midle_bytes);
+
+    std::string admin = "admin";
+    bytes admin_bytes;
+    ASCII_to_bytes(admin, admin_bytes);
+    padding_PKCS7(admin_bytes, 16);
+    admin_midle_bytes.insert(admin_midle_bytes.end(), admin_bytes.begin(), admin_bytes.end());
+
+    bytes x;
+    std::string end_ascii = "m00";
+    ASCII_to_bytes(end_ascii, x);
+    admin_midle_bytes.insert(admin_midle_bytes.end(), x.begin(), x.end());
+    bytes_to_ASCII(admin_midle_bytes, admin_midle);
 
 
+    std::string profile_admin_midle = create_profile_for(admin_midle); 
+    ASCII_to_bytes(profile_admin_midle, profile_plaintext_admin_midle);  
+    profile_ciphertext_admin_midle = encryption_oracle_13(profile_plaintext_admin_midle);
+
+    std::string profile_orig = create_profile_for("foo@bar.com00");
+    ASCII_to_bytes(profile_orig, profile_plaintext_orig);
+    profile_ciphertext_orig = encryption_oracle_13(profile_plaintext_orig);
+
+
+    bytes c1_mid = slice(profile_ciphertext_admin_midle, 0, 16);
+    bytes c2_mid = slice(profile_ciphertext_admin_midle, 16, 16);
+    bytes c3_mid = slice(profile_ciphertext_admin_midle, 32, 16);
+    bytes c4_mid = slice(profile_ciphertext_admin_midle, 48, 16);
+
+    bytes c1_orig = slice(profile_ciphertext_orig, 0, 16);
+    bytes c2_orig = slice(profile_ciphertext_orig, 16, 16);
+    bytes c3_orig = slice(profile_ciphertext_orig, 32, 16);
+
+    bytes changed;
+    changed.insert(changed.end(), c1_orig.begin(), c1_orig.end());
+    changed.insert(changed.end(), c2_orig.begin(), c2_orig.end());
+    changed.insert(changed.end(), c2_mid.begin(), c2_mid.end());
+
+    if (is_profile_has_admin_role(changed)) {
+        std::cout << "Profile has admin role!\n";
+    } else {
+        std::cout << "Profile has user role!\n";
+    }
     
+
 }
