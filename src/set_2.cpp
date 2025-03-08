@@ -6,9 +6,14 @@
 #include "AES.h"
 
 bytes KEY_TASK_12 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x14, 0x56, 0x00, 0x05, 0x50, 0x77, 0x1a, 0x3b};
-bytes UNKNOWN_STRING_TASK_12;
+bytes UNKNOWN_STRING_TASK_12 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x14, 0x56, 0x00, 0x05};
 
 bytes KEY_TASK_13 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x14, 0x56, 0x00, 0x05, 0x50, 0x77, 0x1a, 0x3b};
+
+bytes KEY_TASK_14 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x14, 0x56, 0x00, 0x05, 0x50, 0x77, 0x1a, 0x3b};
+bytes UNKNOWN_STRING_TASK_14 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x14, 0x56, 0x00, 0x05};
+bytes RANDOM_PREFIX_TASK_14 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x14, 0x56, 0x00, 0x05};
+
 
 
 void solve_task_9()
@@ -283,6 +288,46 @@ void solve_task_13()
     } else {
         std::cout << "Profile has user role!\n";
     }
-    
+}
 
+
+bytes encryption_oracle_14(const bytes& text)
+{
+    bytes ciphertext;
+    params algorithm {4, 4, 10};
+
+    bytes plaintext;
+    plaintext.insert(plaintext.end(), text.begin(), text.end());
+
+    plaintext.insert(plaintext.end(), text.begin(), text.end());
+
+    plaintext.insert(plaintext.end(), UNKNOWN_STRING_TASK_14.begin(), UNKNOWN_STRING_TASK_14.end());
+
+    encrypt_text_ECB(plaintext, ciphertext, KEY_TASK_14, algorithm);
+
+    return ciphertext;
+}
+
+
+void solve_task_14()
+{
+    KEY_TASK_14 = generate_random_bytes_sequence(16);
+
+    std::string base64 = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK";
+
+    base64_to_bytes(base64, UNKNOWN_STRING_TASK_14);
+    RANDOM_PREFIX_TASK_14 = generate_random_bytes_sequence(generate_random_number(30));
+
+    int block_size = discover_block_size(encryption_oracle_14);
+
+    std::cout << "Size: " << block_size << "\n";
+
+    //check ECB mode
+    if (is_oracle_encrypt_ECB_mode(encryption_oracle_14)) {
+        std::cout << "This ciphertext has been ecnrypted with ECB!\n\n";
+    } else {
+        std::cout << "This ciphertext has been ecnrypted with CBC!\n\n";
+    }
+
+    
 }

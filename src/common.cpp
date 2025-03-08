@@ -416,7 +416,6 @@ bool is_oracle_encrypt_ECB_mode(bytes (*oracle)(const bytes&))
         text.push_back(0x00);
     }
     
-    std::cout << "Main information about random encryption\n";
     bytes ciphertext = oracle(text);
 
     int block_size = discover_block_size(oracle);
