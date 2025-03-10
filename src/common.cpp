@@ -40,7 +40,7 @@ void insert_symbol(std::string& str, char symbol, int count)
 }
 
 
-bytes slice(bytes& vec, int start, int count)
+bytes slice(const bytes& vec, int start, int count)
 {
     bytes sliced_vec;
 
@@ -477,6 +477,60 @@ std::vector<std::pair<std::string, std::string>> parse(std::string& text)
 
     return dictionary;
 }
+
+
+int get_index_of_subvector(const bytes& main_vec, const bytes& subVec)
+{
+    int index = 0;
+    auto it = std::search(main_vec.begin(), main_vec.end(), subVec.begin(), subVec.end());
+    if (it != main_vec.end()) {
+        index = it - main_vec.begin();
+    } else {
+        index = -1;
+    }
+
+    return index;
+}
+
+
+
+
+bytes get_most_repeated_block(const bytes& ciphertext, int block_size)
+{
+    std::vector<bytes> blocks;
+    
+    bool flag = false;
+
+    for (unsigned int i = 0; i < ciphertext.size(); i += block_size) {
+        bytes temp = slice(ciphertext, i, block_size);
+        for (unsigned int j = 0; j < blocks.size(); ++j) {
+            if (compare_bytes(temp, blocks[j]) && !flag) {
+                flag = true;
+
+            }
+        }
+        blocks.push_back(temp);
+    }
+
+    std::unordered_map<bytes, int, VectorHash> frequency; //VectorHash в types.h
+
+    for (const auto& block : blocks) {
+        frequency[block]++;
+    }
+
+    bytes most_repeated_block = {0x00};
+    int max_times_repeated = 0;
+
+    for (const auto& [block, count] : frequency) {
+        if (count > max_times_repeated) {
+            max_times_repeated = count;
+            most_repeated_block = block;
+        }
+    }
+
+    return most_repeated_block;
+}
+
 
 
 bool is_hex(std::string& text)

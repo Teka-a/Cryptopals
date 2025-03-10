@@ -11,7 +11,7 @@ void padding_bytes(bytes&, int);
 
 void insert_symbol(std::string&, char, int);
 
-bytes slice(bytes&, int, int);
+bytes slice(const bytes&, int, int);
 void split_into_blocks(bytes&, int, std::vector<bytes>&);
 void transpose_blocks(std::vector<bytes>&, std::vector<bytes>&);
 
@@ -46,6 +46,9 @@ std::map<bytes, byte> produce_last_byte_dict(bytes, int, bytes (*oracle)(const b
 
 std::string create_profile_for(std::string);
 std::vector<std::pair<std::string, std::string>> parse(std::string&);
+
+int get_index_of_subvector(const bytes&, const bytes&);
+bytes get_most_repeated_block(const bytes&, int);
 
 bool is_hex(std::string&);
 bool is_ASCII(std::string&);

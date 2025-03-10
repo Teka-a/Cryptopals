@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 
 typedef unsigned char byte;
@@ -20,5 +21,16 @@ static const std::string base64_chars =
              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
              "abcdefghijklmnopqrstuvwxyz"
              "0123456789+/";
+
+struct VectorHash {
+    template <typename T>
+    std::size_t operator ()(const std::vector<T>& vec) const {
+        std::size_t seed = 0;
+        for (const T& elem : vec) {
+            seed ^= std::hash<T>{}(elem) + 0x9e3779b9 + (seed << 6) + (seed >> 2);  // Универсальный хэш
+        }
+        return seed;
+    }
+};
 
 #endif // TYPES_H

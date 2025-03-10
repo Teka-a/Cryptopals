@@ -297,7 +297,7 @@ bytes encryption_oracle_14(const bytes& text)
     params algorithm {4, 4, 10};
 
     bytes plaintext;
-    plaintext.insert(plaintext.end(), text.begin(), text.end());
+    plaintext.insert(plaintext.end(), RANDOM_PREFIX_TASK_14.begin(), RANDOM_PREFIX_TASK_14.end());
 
     plaintext.insert(plaintext.end(), text.begin(), text.end());
 
@@ -317,6 +317,7 @@ void solve_task_14()
 
     base64_to_bytes(base64, UNKNOWN_STRING_TASK_14);
     RANDOM_PREFIX_TASK_14 = generate_random_bytes_sequence(generate_random_number(30));
+    std::cout << "Random prefix size(bytes): " << RANDOM_PREFIX_TASK_14.size() << "\n";
 
     int block_size = discover_block_size(encryption_oracle_14);
 
@@ -328,6 +329,34 @@ void solve_task_14()
     } else {
         std::cout << "This ciphertext has been ecnrypted with CBC!\n\n";
     }
+
+    //Find start of attacker-bytes
+    bytes temp_text {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+    bytes temp_ciphertext = encryption_oracle_14(temp_text);
+
+    bytes zeroes_block_enc = get_most_repeated_block(temp_ciphertext, block_size);
+
+    temp_text = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    temp_ciphertext = encryption_oracle_14(temp_text);
+    while (get_index_of_subvector(temp_ciphertext, zeroes_block_enc) == -1) {
+        temp_text.push_back(0x00);
+        temp_ciphertext = encryption_oracle_14(temp_text);
+    }
+
+    int amount_of_bytes_to_cover_prefix = temp_text.size() - 16;
+    std::cout << "Bytes to cover prefix: " << amount_of_bytes_to_cover_prefix << "\n";
+
+    int amount_of_bytes_to_ignore = get_index_of_subvector(temp_ciphertext, zeroes_block_enc);
+    std::cout << "Start of attacker bytes: " << amount_of_bytes_to_ignore << "\n";
+
+
+
+
+
 
     
 }
