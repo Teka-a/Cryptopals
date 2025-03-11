@@ -388,17 +388,23 @@ bool contains_repeating_blocks(bytes& ciphertext, int block_size)
 }
 
 
-std::map<bytes, byte> produce_last_byte_dict(bytes not_full_block, int block_size, bytes (*oracle)(const bytes&))
+std::map<bytes, byte> produce_last_byte_dict(bytes not_full_block, int block_size, int start_slice_ind, bytes (*oracle)(const bytes&))
 {
     std::map<bytes, byte> cipher_dictionary;
     bytes plain = not_full_block;
     plain.push_back(0x00);
     bytes cipher;
+    int last_elem = plain.size() - 1;
+    
 
     for (unsigned int b = 0; b <= 256; ++b) {
-        plain[block_size - 1] = (byte)b;
+        plain[last_elem] = (byte)b;
+        //std::cout << "Byte: " << format_hex(b) << "\n";
+        //print_bytes(plain);
         cipher = oracle(plain);
-        cipher = slice(cipher, 0, block_size);
+        //print_bytes(cipher);
+
+        cipher = slice(cipher, start_slice_ind, block_size);
         cipher_dictionary[cipher] = (byte)b;
     }
 
@@ -493,8 +499,6 @@ int get_index_of_subvector(const bytes& main_vec, const bytes& subVec)
 }
 
 
-
-
 bytes get_most_repeated_block(const bytes& ciphertext, int block_size)
 {
     std::vector<bytes> blocks;
@@ -531,6 +535,29 @@ bytes get_most_repeated_block(const bytes& ciphertext, int block_size)
     return most_repeated_block;
 }
 
+
+bool is_padded_PKCS7(bytes& data)
+{
+    if (data.empty() || data.size() % 16 != 0) {
+        return false;
+    }
+
+    byte padding_val = data.back();
+
+    if (padding_val < 1 || padding_val > 16) {
+        return false;
+    }
+
+    int data_size = data.size();
+    for (int i = data_size - padding_val; i < data_size; i++) {
+        if (data[i] != padding_val) {
+            return false;
+        }
+    }
+
+    return true;
+
+}
 
 
 bool is_hex(std::string& text)

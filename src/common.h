@@ -42,13 +42,15 @@ bool is_oracle_encrypt_ECB_mode(bytes (*oracle)(const bytes&));
 
 int discover_block_size(bytes (*oracle)(const bytes&));
 
-std::map<bytes, byte> produce_last_byte_dict(bytes, int, bytes (*oracle)(const bytes&));
+std::map<bytes, byte> produce_last_byte_dict(bytes, int, int, bytes (*oracle)(const bytes&));
 
 std::string create_profile_for(std::string);
 std::vector<std::pair<std::string, std::string>> parse(std::string&);
 
 int get_index_of_subvector(const bytes&, const bytes&);
 bytes get_most_repeated_block(const bytes&, int);
+
+bool is_padded_PKCS7(bytes&);
 
 bool is_hex(std::string&);
 bool is_ASCII(std::string&);

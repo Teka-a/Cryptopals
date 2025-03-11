@@ -144,6 +144,7 @@ void solve_task_12()
     bytes encrypted;
     bytes enc_attack_block;
 
+
     byte finded_byte;
 
     bytes x_text (x_str_len, 0x00);
@@ -155,7 +156,7 @@ void solve_task_12()
         x_text = slice(x_text, 1, x_text.size() - 1);
 
         temp = slice(x_text, attack_block_start_ind, block_size - 1);
-        std::map<bytes, byte> last_byte_dict = produce_last_byte_dict(temp, block_size, encryption_oracle_12);
+        std::map<bytes, byte> last_byte_dict = produce_last_byte_dict(temp, block_size, 0, encryption_oracle_12);
         
         encrypted = encryption_oracle_12(user_input);
 
@@ -169,7 +170,7 @@ void solve_task_12()
 
     std::string ascii = "";
     bytes_to_ASCII(x_text, ascii);
-    std::cout << ascii << "\n";
+    std::cout << "Target string: \n" << ascii << "\n";
 }
 
 
@@ -316,6 +317,8 @@ void solve_task_14()
     std::string base64 = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK";
 
     base64_to_bytes(base64, UNKNOWN_STRING_TASK_14);
+    std::cout << "UNKNOWN_STRING_TASK_14 size(bytes): " << UNKNOWN_STRING_TASK_14.size() << "\n";
+
     RANDOM_PREFIX_TASK_14 = generate_random_bytes_sequence(generate_random_number(30));
     std::cout << "Random prefix size(bytes): " << RANDOM_PREFIX_TASK_14.size() << "\n";
 
@@ -347,16 +350,54 @@ void solve_task_14()
         temp_ciphertext = encryption_oracle_14(temp_text);
     }
 
-    int amount_of_bytes_to_cover_prefix = temp_text.size() - 16;
-    std::cout << "Bytes to cover prefix: " << amount_of_bytes_to_cover_prefix << "\n";
+    int bytes_to_cover_prefix = temp_text.size() - 16;
+    std::cout << "Bytes to cover prefix: " << bytes_to_cover_prefix << "\n";
 
-    int amount_of_bytes_to_ignore = get_index_of_subvector(temp_ciphertext, zeroes_block_enc);
-    std::cout << "Start of attacker bytes: " << amount_of_bytes_to_ignore << "\n";
+    int bytes_of_prefix = get_index_of_subvector(temp_ciphertext, zeroes_block_enc) - bytes_to_cover_prefix;
+    std::cout << "Bytes of prefix: " << bytes_of_prefix << "\n";
+
+    bytes zeroes_cover_prefix (bytes_to_cover_prefix, 0x00);
+    temp_ciphertext = encryption_oracle_14(zeroes_cover_prefix);
+
+    int bytes_of_x = temp_ciphertext.size() - bytes_of_prefix - bytes_to_cover_prefix;
+    std::cout << "Bytes of x: " << bytes_of_x << "\n";
+
+    int attack_block_start_ind = ((bytes_of_x / block_size) - 1) * 16 + bytes_of_prefix + bytes_to_cover_prefix;
+    std::cout << "Start of attack block: " << attack_block_start_ind << "\n";
+
+    bytes user_input (bytes_of_x + bytes_to_cover_prefix, 0x00);
+    bytes encrypted;
+    bytes enc_attack_block;
+
+    byte finded_byte;
+
+    bytes x_text (bytes_of_x, 0x00);
+    bytes to_cover_prefix(bytes_to_cover_prefix, 0x00);
+
+    bytes temp;
 
 
+    for (int i = bytes_of_x; i > 0; --i) {
+        user_input = slice(user_input, 1, user_input.size() - 1);
+
+        x_text = slice(x_text, 1, x_text.size() - 1);
+
+        temp = slice(x_text, attack_block_start_ind - (bytes_of_prefix + bytes_to_cover_prefix), block_size - 1);
+        temp.insert(temp.begin(), to_cover_prefix.begin(), to_cover_prefix.end());
+
+        std::map<bytes, byte> last_byte_dict = produce_last_byte_dict(temp, block_size, bytes_of_prefix + bytes_to_cover_prefix, encryption_oracle_14);
+        
+        encrypted = encryption_oracle_14(user_input);
 
 
+        enc_attack_block = slice(encrypted, attack_block_start_ind, block_size);
 
+        finded_byte = last_byte_dict[enc_attack_block];
 
-    
+        x_text.push_back(finded_byte);
+    }
+
+    std::string ascii = "";
+    bytes_to_ASCII(x_text, ascii);
+    std::cout << "Target string: \n" << ascii << "\n";
 }
