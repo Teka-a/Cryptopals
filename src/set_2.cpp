@@ -401,3 +401,26 @@ void solve_task_14()
     bytes_to_ASCII(x_text, ascii);
     std::cout << "Target string: \n" << ascii << "\n";
 }
+
+
+void solve_task_15()
+{
+    bytes correctly_padded {'I', 'C', 'E', ' ', 'I', 'C', 'E', ' ', 'B', 'A', 'B', 'Y', 0x04, 0x04, 0x04, 0x04};
+    bytes incorrectly_padded {'I', 'C', 'E', ' ', 'I', 'C', 'E', ' ', 'B', 'A', 'B', 'Y', 0x05, 0x05, 0x05, 0x05};
+
+    print_bytes(correctly_padded);
+    if (is_PKCS7_padding_valide(correctly_padded)) {
+        std::cout << "Correct padding!\n";
+    } else {
+        std::cout << "Incorrect padding!\n";
+    }
+    print_bytes(correctly_padded);
+
+    print_bytes(incorrectly_padded);
+    if (is_PKCS7_padding_valide(incorrectly_padded)) {
+        std::cout << "Correct padding!\n";
+    } else {
+        std::cout << "Incorrect padding!\n";
+    }
+    print_bytes(incorrectly_padded);
+}

@@ -536,7 +536,7 @@ bytes get_most_repeated_block(const bytes& ciphertext, int block_size)
 }
 
 
-bool is_padded_PKCS7(bytes& data)
+bool is_PKCS7_padding_valide(bytes& data)
 {
     if (data.empty() || data.size() % 16 != 0) {
         return false;
@@ -553,6 +553,10 @@ bool is_padded_PKCS7(bytes& data)
         if (data[i] != padding_val) {
             return false;
         }
+    }
+
+    for (int j = padding_val; j > 0; j--) {
+        data.pop_back();
     }
 
     return true;

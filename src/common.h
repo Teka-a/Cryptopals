@@ -50,7 +50,8 @@ std::vector<std::pair<std::string, std::string>> parse(std::string&);
 int get_index_of_subvector(const bytes&, const bytes&);
 bytes get_most_repeated_block(const bytes&, int);
 
-bool is_padded_PKCS7(bytes&);
+//will strip padding
+bool is_PKCS7_padding_valide(bytes&);
 
 bool is_hex(std::string&);
 bool is_ASCII(std::string&);
