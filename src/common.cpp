@@ -564,6 +564,22 @@ bool is_PKCS7_padding_valide(bytes& data)
 }
 
 
+std::string quote_chars(const std::string& input, std::vector<char>& not_allowed_chars)
+{
+    std::string result;
+    for (char c : input) {
+        if (std::find(not_allowed_chars.begin(), not_allowed_chars.end(), c) != not_allowed_chars.end()) {
+            result += '"' + c + '"'; 
+        } else {
+            result += c;
+        }
+        
+    }
+    return result;
+}
+
+
+
 bool is_hex(std::string& text)
 {
     for (char ch : text) {

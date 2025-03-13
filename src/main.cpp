@@ -50,7 +50,7 @@ int main() {
         } else if (opt == 15) {
             solve_task_15();
         } else if (opt == 16) {
-            //solve_task_16();
+            solve_task_16();
         }
     }
 

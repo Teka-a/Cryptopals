@@ -19,6 +19,6 @@ void solve_task_12();
 void solve_task_13();
 void solve_task_14();
 void solve_task_15();
-//void solve_task_16();
+void solve_task_16();
 
 #endif SET2_H

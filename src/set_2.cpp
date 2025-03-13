@@ -15,6 +15,10 @@ bytes UNKNOWN_STRING_TASK_14 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x
 bytes RANDOM_PREFIX_TASK_14 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x14, 0x56, 0x00, 0x05};
 
 
+bytes KEY_TASK_16 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12, 0x14, 0x56, 0x00, 0x05, 0x50, 0x77, 0x1a, 0x3b};
+bytes IV_TASK_16 {0x01, 0x45, 0x18, 0xff, 0x0f, 0x0e, 0x23, 0x12};
+
+
 
 void solve_task_9()
 {
@@ -423,4 +427,49 @@ void solve_task_15()
         std::cout << "Incorrect padding!\n";
     }
     print_bytes(incorrectly_padded);
+}
+
+
+bytes encryption_oracle_16(const std::string& user_data)
+{
+    std::vector<char> not_allowed_chars {';', '='};
+    std::string quoted = quote_chars(user_data, not_allowed_chars);
+
+    std::string prepend_str = "comment1=cooking%20MCs;userdata=";
+    std::string append_str = ";comment2=%20like%20a%20pound%20of%20bacon";
+
+    bytes prepend;
+    ASCII_to_bytes(prepend_str, prepend);
+
+    bytes text;
+    ASCII_to_bytes(quoted, text);
+
+    bytes append;
+    ASCII_to_bytes(append_str, append);
+
+    bytes plaintext;
+    plaintext.insert(plaintext.end(), prepend.begin(), prepend.end());
+
+    plaintext.insert(plaintext.end(), text.begin(), text.end());
+
+    plaintext.insert(plaintext.end(), append.begin(), append.end());
+
+    bytes ciphertext;
+    params algorithm {4, 4, 10};
+    encrypt_text_CBC(plaintext, ciphertext, KEY_TASK_16, IV_TASK_16, algorithm);
+
+    return ciphertext;
+}
+
+
+void solve_task_16()
+{
+    KEY_TASK_16 = generate_random_bytes_sequence(16);
+    IV_TASK_16 = generate_random_bytes_sequence(8);
+
+    std::string data = "just = something";
+    bytes res = encryption_oracle_16(data);
+
+    print_bytes(res);
+    
 }

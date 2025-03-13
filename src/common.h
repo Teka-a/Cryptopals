@@ -53,6 +53,8 @@ bytes get_most_repeated_block(const bytes&, int);
 //will strip padding
 bool is_PKCS7_padding_valide(bytes&);
 
+std::string quote_chars(const std::string&, std::vector<char>&);
+
 bool is_hex(std::string&);
 bool is_ASCII(std::string&);
 bool is_base64(std::string&);
