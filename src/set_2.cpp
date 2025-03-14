@@ -183,6 +183,8 @@ bytes encryption_oracle_13(const bytes& text)
     bytes ciphertext;
     params algorithm {4, 4, 10};
 
+    
+
     bytes plaintext;
     plaintext.insert(plaintext.end(), text.begin(), text.end());
 
@@ -430,10 +432,13 @@ void solve_task_15()
 }
 
 
-bytes encryption_oracle_16(const std::string& user_data)
+bytes encryption_oracle_16(std::string& user_data)
 {
     std::vector<char> not_allowed_chars {';', '='};
-    std::string quoted = quote_chars(user_data, not_allowed_chars);
+    //std::string quoted = quote_chars(user_data, not_allowed_chars);
+    user_data.erase(std::remove(user_data.begin(), user_data.end(), '='), user_data.end());
+    user_data.erase(std::remove(user_data.begin(), user_data.end(), '='), user_data.end());
+
 
     std::string prepend_str = "comment1=cooking%20MCs;userdata=";
     std::string append_str = ";comment2=%20like%20a%20pound%20of%20bacon";
@@ -442,7 +447,7 @@ bytes encryption_oracle_16(const std::string& user_data)
     ASCII_to_bytes(prepend_str, prepend);
 
     bytes text;
-    ASCII_to_bytes(quoted, text);
+    ASCII_to_bytes(user_data, text);
 
     bytes append;
     ASCII_to_bytes(append_str, append);
@@ -462,6 +467,24 @@ bytes encryption_oracle_16(const std::string& user_data)
 }
 
 
+bool is_admin(bytes& encrypted)
+{
+    bool flag = false;
+
+    bytes decrypted;
+
+    params algorithm {4, 4, 10};
+    decrypt_text_CBC(encrypted, decrypted, KEY_TASK_16, IV_TASK_16, algorithm);
+
+    std::string decrypted_line = "";
+    bytes_to_ASCII(decrypted, decrypted_line);
+
+    std::cout << "Result of decryption: " << decrypted_line << "\n";
+ 
+    return flag;
+}
+
+
 void solve_task_16()
 {
     KEY_TASK_16 = generate_random_bytes_sequence(16);
@@ -470,6 +493,13 @@ void solve_task_16()
     std::string data = "just = something";
     bytes res = encryption_oracle_16(data);
 
-    print_bytes(res);
+    std::cout << "General info about ciphertext: \n";
+    std::cout << "Size in bytes: " << res.size() << "\n";
+
+    res[47] = res[47] + 0x01;
+
+    bool is_admin_role_added = is_admin(res);
+
+
     
 }
