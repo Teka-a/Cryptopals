@@ -440,8 +440,8 @@ bytes encryption_oracle_16(std::string& user_data)
     user_data.erase(std::remove(user_data.begin(), user_data.end(), '='), user_data.end());
 
 
-    std::string prepend_str = "comment1=cooking%20MCs;userdata=";
-    std::string append_str = ";comment2=%20like%20a%20pound%20of%20bacon";
+    std::string prepend_str = "comment1=cooking%20MCs;userdata="; //32
+    std::string append_str = ";comment2=%20like%20a%20pound%20of%20bacon"; //
 
     bytes prepend;
     ASCII_to_bytes(prepend_str, prepend);
@@ -490,15 +490,39 @@ void solve_task_16()
     KEY_TASK_16 = generate_random_bytes_sequence(16);
     IV_TASK_16 = generate_random_bytes_sequence(8);
 
-    std::string data = "just = something";
+    std::string data = "?admin?true?....";
     bytes res = encryption_oracle_16(data);
 
     std::cout << "General info about ciphertext: \n";
     std::cout << "Size in bytes: " << res.size() << "\n";
+    print_bytes(res);
 
-    res[47] = res[47] + 0x01;
+    
+    std::string a_block = "AAAAAAAAAAAAAAAA";
+    bytes a_res = encryption_oracle_16(data);
 
-    bool is_admin_role_added = is_admin(res);
+    bytes a_bytes;
+    ASCII_to_bytes(a_block, a_bytes);
+
+    bytes data_bytes;
+    ASCII_to_bytes(data, data_bytes);
+
+    bytes flipper (16, 0x00);
+
+    for (int i = 0; i < 16; i++) {
+        flipper[i] = a_bytes[i] ^ data_bytes[i];
+    }
+
+    for (int j = 0; j < 16 * 3; j++) {
+        flipper.insert(flipper.begin(), 0x00);
+    }
+
+    bytes changed;
+
+    
+
+    print_bytes(res);
+    std::cout << is_admin(res) << "\n";
 
 
     
